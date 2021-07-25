@@ -21,7 +21,8 @@ pub async fn serv() -> Result<(), Box<dyn Error>> {
 
     let listener = TcpListener::bind(listen_addr).await?;
 
-    while let Ok((inbound, _)) = listener.accept().await {
+    while let Ok((inbound, peer_addr)) = listener.accept().await {
+        println!("A new connection {:?} is coming!", peer_addr);
         let transfer = transfer(inbound, proxy_addr.clone()).map(|r| {
             if let Err(e) = r {
                 println!("Failed to transfer; error={}", e);
