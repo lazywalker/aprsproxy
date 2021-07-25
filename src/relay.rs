@@ -4,13 +4,18 @@ use tokio::net::tcp::{ReadHalf, WriteHalf};
 use tokio::net::{TcpListener, TcpStream};
 
 use futures::FutureExt;
+use lazy_static::lazy_static;
 use std::error::Error;
 
 use crate::dns;
 
-pub async fn serv(conf: ProxyConfig) -> Result<(), Box<dyn Error>> {
-    let listen_addr = conf.local_addr;
-    let proxy_addr = resolve_addr(conf.remote_addr).await;
+lazy_static! {
+    static ref CONF: ProxyConfig = ProxyConfig::parse();
+}
+
+pub async fn serv() -> Result<(), Box<dyn Error>> {
+    let listen_addr = &CONF.local_addr;
+    let proxy_addr = resolve_addr(CONF.remote_addr.as_str()).await;
     println!("Listening on: {}", listen_addr);
     println!("Proxying to: {}", proxy_addr);
 
@@ -63,21 +68,31 @@ async fn copy_data_to_server(
             break;
         }
 
-        let line = String::from_utf8_lossy(&buf[..n]);
+        let mut line: String = String::from_utf8_lossy(&buf[..n]).to_string();
+        // handle the replacement, if any
+        if CONF.replace_from.is_some() && CONF.replace_with.is_some() {
+            line = line.replace(
+                CONF.replace_from.as_ref().unwrap(),
+                CONF.replace_with.as_ref().unwrap(),
+            );
+
+            writer.write_all(&line.as_bytes()).await?;
+        } else {
+            writer.write_all(&buf[..n]).await?;
+        }
         print!("{}", line);
-        writer.write_all(&buf[..n]).await?;
     }
     io::stdout().flush().await?;
     writer.flush().await?;
     Ok(())
 }
 
-async fn resolve_addr(addr_str: String) -> String {
+async fn resolve_addr(addr_str: &str) -> String {
     let addr_parsed: Vec<&str> = addr_str.split(":").collect();
     let host = addr_parsed[0].to_string();
 
     match dns::resolve_single(host).await {
         Some(ip) => format!("{}:{}", ip.to_string(), addr_parsed[1]),
-        None => addr_str,
+        None => addr_str.to_string(),
     }
 }

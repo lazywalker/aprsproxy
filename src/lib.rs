@@ -41,6 +41,7 @@ fn parse_ipaddr(addr_str: &str) -> Result<String, AddrParseError> {
     Ok(format!("{}:{}", addr, port))
 }
 
+#[derive(Clone)]
 pub struct ProxyConfig {
     pub local_addr: String,
     pub remote_addr: String,
@@ -51,7 +52,6 @@ pub struct ProxyConfig {
 impl ProxyConfig {
     pub fn parse() -> ProxyConfig {
         let opt = Opt::from_args();
-        println!("{:#?}", opt);
 
         ProxyConfig {
             local_addr: opt.local_addr,
