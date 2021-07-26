@@ -20,7 +20,7 @@ pub struct Opt {
 
     /// The remote address and port to connect to
     #[structopt(short = "r", long = "remote", default_value = "china.aprs2.net:14580")]
-    pub host_addr: String,
+    pub remote_addr: String,
 
     /// The text to be replaced
     #[structopt(long = "replace")]
@@ -55,7 +55,7 @@ impl ProxyConfig {
 
         ProxyConfig {
             local_addr: opt.local_addr,
-            remote_addr: opt.host_addr,
+            remote_addr: opt.remote_addr,
             replace_from: opt.replace_from,
             replace_with: opt.replace_with,
         }
