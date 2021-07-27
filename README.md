@@ -21,3 +21,18 @@ OPTIONS:
         --replace <replace-from>    The text to be replaced
         --with <replace-with>       The text to replace with
 ```
+
+
+## Example
+```log
+$ RUST_LOG=info ./aprsproxy --replace=BD7MQB-13 --with=SZWX-13 -f
+[2021-07-27T02:33:45Z INFO  aprsproxy] Starting up...
+[2021-07-27T02:33:45Z INFO  aprsproxy::dns] Resolving ip address...
+[2021-07-27T02:33:45Z INFO  aprsproxy::relay] Listening on: 0.0.0.0:8074
+[2021-07-27T02:33:45Z INFO  aprsproxy::relay] Proxying to: 43.245.198.229:14580
+[2021-07-27T02:33:45Z INFO  aprsproxy::relay] A new connection 113.118.74.21:47851 is coming!
+[2021-07-27T02:33:46Z INFO  aprsproxy::relay] user BD7MQB-10 pass ****** vers APRS-51WG3-8K-20190610
+[2021-07-27T02:34:06Z INFO  aprsproxy::relay] BI7KCD-9>R2UYX6,BA7NQ-10*,WIDE1*,BH7KCJ-3*,WIDE2*:`)XQm4>/`"42}_%
+[2021-07-27T02:34:53Z INFO  aprsproxy::relay] BI7KCD-9>R3PPR7,BA7NQ-10*,WIDE1*,BH7KCJ-3*,WIDE2*:`)XRmpC>/`"4#}_%
+[2021-07-27T02:35:07Z INFO  aprsproxy::relay] VR2ZVR>RR2VT1,BH7KCJ-3*,WIDE1*:`*_LnplK\]"4s}Hello from VR2ZVR...Stay Safe !!=
+```
