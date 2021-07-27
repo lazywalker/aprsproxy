@@ -1,4 +1,5 @@
 use aprsproxy::CONFIG;
+use log::{error, info};
 use tokio::io::{self, AsyncReadExt, AsyncWriteExt};
 use tokio::net::tcp::{ReadHalf, WriteHalf};
 use tokio::net::{TcpListener, TcpStream};
@@ -13,16 +14,16 @@ pub async fn serv() -> Result<(), Box<dyn Error>> {
     filelog::init();
     let listen_addr = &CONFIG.local_addr;
     let proxy_addr = resolve_addr(CONFIG.remote_addr.as_str()).await;
-    println!("Listening on: {}", listen_addr);
-    println!("Proxying to: {}", proxy_addr);
+    info!("Listening on: {}", listen_addr);
+    info!("Proxying to: {}", proxy_addr);
 
     let listener = TcpListener::bind(listen_addr).await?;
 
     while let Ok((inbound, peer_addr)) = listener.accept().await {
-        println!("A new connection {:?} is coming!", peer_addr);
+        info!("A new connection {:?} is coming!", peer_addr);
         let transfer = transfer(inbound, proxy_addr.clone()).map(|r| {
             if let Err(e) = r {
-                println!("Failed to transfer; error={}", e);
+                error!("Failed to transfer; error={}", e);
             }
         });
 
@@ -78,7 +79,7 @@ async fn copy_data_to_server(
         } else {
             writer.write_all(&buf[..n]).await?;
         }
-        print!("{}", line);
+        info!("{}", line);
         filelog::log(line.as_str());
     }
     io::stdout().flush().await?;

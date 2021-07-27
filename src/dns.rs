@@ -1,3 +1,4 @@
+use log::{error, info};
 use std::net;
 use trust_dns_resolver::{
     config::{ResolverConfig, ResolverOpts},
@@ -15,6 +16,8 @@ pub async fn resolve_single(addr: String) -> Option<net::IpAddr> {
             .await
             .unwrap();
     let remote_addr = format!("{}.", addr);
+
+    info!("Resolving ip address...");
     let res = resolver.lookup_ip(remote_addr).await.unwrap();
 
     match res.iter().find(|ip| ip.is_ipv4()) {
@@ -23,7 +26,7 @@ pub async fn resolve_single(addr: String) -> Option<net::IpAddr> {
             if let Some(ip_v6) = res.iter().find(|ip| ip.is_ipv6()) {
                 Some(ip_v6)
             } else {
-                println!("Cannot resolve {}", addr);
+                error!("Cannot resolve {}", addr);
                 return None;
             }
         }
