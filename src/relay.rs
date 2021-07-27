@@ -1,21 +1,18 @@
-use aprsproxy::ProxyConfig;
+use aprsproxy::CONFIG;
 use tokio::io::{self, AsyncReadExt, AsyncWriteExt};
 use tokio::net::tcp::{ReadHalf, WriteHalf};
 use tokio::net::{TcpListener, TcpStream};
 
 use futures::FutureExt;
-use lazy_static::lazy_static;
 use std::error::Error;
 
 use crate::dns;
-
-lazy_static! {
-    static ref CONF: ProxyConfig = ProxyConfig::parse();
-}
+use crate::filelog;
 
 pub async fn serv() -> Result<(), Box<dyn Error>> {
-    let listen_addr = &CONF.local_addr;
-    let proxy_addr = resolve_addr(CONF.remote_addr.as_str()).await;
+    filelog::init();
+    let listen_addr = &CONFIG.local_addr;
+    let proxy_addr = resolve_addr(CONFIG.remote_addr.as_str()).await;
     println!("Listening on: {}", listen_addr);
     println!("Proxying to: {}", proxy_addr);
 
@@ -71,10 +68,10 @@ async fn copy_data_to_server(
 
         let mut line: String = String::from_utf8_lossy(&buf[..n]).to_string();
         // handle the replacement, if any
-        if CONF.replace_from.is_some() && CONF.replace_with.is_some() {
+        if CONFIG.replace_from.is_some() && CONFIG.replace_with.is_some() {
             line = line.replace(
-                CONF.replace_from.as_ref().unwrap(),
-                CONF.replace_with.as_ref().unwrap(),
+                CONFIG.replace_from.as_ref().unwrap(),
+                CONFIG.replace_with.as_ref().unwrap(),
             );
 
             writer.write_all(&line.as_bytes()).await?;
@@ -82,6 +79,7 @@ async fn copy_data_to_server(
             writer.write_all(&buf[..n]).await?;
         }
         print!("{}", line);
+        filelog::log(line.as_str());
     }
     io::stdout().flush().await?;
     writer.flush().await?;

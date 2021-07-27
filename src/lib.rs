@@ -1,5 +1,10 @@
+use lazy_static::lazy_static;
 use std::{net::AddrParseError, str::FromStr};
 use structopt::StructOpt;
+
+lazy_static! {
+    pub static ref CONFIG: ProxyConfig = ProxyConfig::parse();
+}
 
 #[derive(StructOpt, Debug)]
 #[structopt(
@@ -29,6 +34,10 @@ pub struct Opt {
     /// The text to replace with
     #[structopt(long = "with")]
     pub replace_with: Option<String>,
+
+    /// Enable file logging
+    #[structopt(short, long)]
+    pub filelog: bool,
 }
 
 fn parse_ipaddr(addr_str: &str) -> Result<String, AddrParseError> {
@@ -47,6 +56,7 @@ pub struct ProxyConfig {
     pub remote_addr: String,
     pub replace_from: Option<String>,
     pub replace_with: Option<String>,
+    pub filelog: bool,
 }
 
 impl ProxyConfig {
@@ -58,6 +68,7 @@ impl ProxyConfig {
             remote_addr: opt.remote_addr,
             replace_from: opt.replace_from,
             replace_with: opt.replace_with,
+            filelog: opt.filelog,
         }
     }
 }

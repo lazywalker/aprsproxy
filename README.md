@@ -1,4 +1,4 @@
-# AprsProxy 0.1.0
+# AprsProxy 0.1.1
 ``` bash
    ___                ___
   / _ | ___  _______ / _ \_______ __ ____ __
@@ -8,16 +8,16 @@
                 A simply APRS-IS proxy tool.
 
 USAGE:
-    aprsproxy [OPTIONS]
+    aprsproxy [FLAGS] [OPTIONS]
 
 FLAGS:
+    -f, --filelog    Enable file logging
     -h, --help       Prints help information
     -V, --version    Prints version information
 
 OPTIONS:
-    -r, --remote <host-addr>        The remote address and port to connect to [default: china.aprs2.net:14580]
     -l, --local <local-addr>        The local address and port to listen on [default: 0.0.0.0:14580]
+    -r, --remote <remote-addr>      The remote address and port to connect to [default: china.aprs2.net:14580]
         --replace <replace-from>    The text to be replaced
         --with <replace-with>       The text to replace with
-        
 ```
