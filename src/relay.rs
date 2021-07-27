@@ -79,7 +79,7 @@ async fn copy_data_to_server(
         } else {
             writer.write_all(&buf[..n]).await?;
         }
-        info!("{}", line);
+        info!("{}", line.trim_end());
         filelog::log(line.as_str());
     }
     io::stdout().flush().await?;
