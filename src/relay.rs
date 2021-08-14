@@ -69,11 +69,10 @@ async fn copy_data_to_server(
 
         let mut line: String = String::from_utf8_lossy(&buf[..n]).to_string();
         // handle the replacement, if any
-        if CONFIG.replace_from.is_some() && CONFIG.replace_with.is_some() {
-            line = line.replace(
-                CONFIG.replace_from.as_ref().unwrap(),
-                CONFIG.replace_with.as_ref().unwrap(),
-            );
+        if CONFIG.replace_from.len() > 0 && CONFIG.replace_with.len() > 0 {
+            for (i, s) in CONFIG.replace_from.iter().enumerate() {
+                line = line.replace(s.as_str(), CONFIG.replace_with[i].as_str());
+            }
 
             writer.write_all(&line.as_bytes()).await?;
         } else {

@@ -28,12 +28,12 @@ pub struct Opt {
     pub remote_addr: String,
 
     /// The text to be replaced
-    #[structopt(long = "replace")]
-    pub replace_from: Option<String>,
+    #[structopt(long = "replace", multiple = true)]
+    pub replace_from: Vec<String>,
 
     /// The text to replace with
-    #[structopt(long = "with")]
-    pub replace_with: Option<String>,
+    #[structopt(long = "with", multiple = true)]
+    pub replace_with: Vec<String>,
 
     /// Enable file logging
     #[structopt(short, long)]
@@ -54,8 +54,8 @@ fn parse_ipaddr(addr_str: &str) -> Result<String, AddrParseError> {
 pub struct ProxyConfig {
     pub local_addr: String,
     pub remote_addr: String,
-    pub replace_from: Option<String>,
-    pub replace_with: Option<String>,
+    pub replace_from: Vec<String>,
+    pub replace_with: Vec<String>,
     pub filelog: bool,
 }
 

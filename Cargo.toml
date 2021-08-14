@@ -1,6 +1,6 @@
 [package]
 name = "aprsproxy"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Michael BD7MQB <bd7mqb@qq.com>"]
 edition = "2018"
 
