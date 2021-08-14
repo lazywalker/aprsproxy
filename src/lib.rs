@@ -27,11 +27,11 @@ pub struct Opt {
     #[structopt(short = "r", long = "remote", default_value = "china.aprs2.net:14580")]
     pub remote_addr: String,
 
-    /// The text to be replaced
+    /// The text to be replaced, can be multiple values
     #[structopt(long = "replace", multiple = true)]
     pub replace_from: Vec<String>,
 
-    /// The text to replace with
+    /// The text to replace with, must be the same length of replace-from
     #[structopt(long = "with", multiple = true)]
     pub replace_with: Vec<String>,
 
