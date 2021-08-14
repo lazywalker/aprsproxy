@@ -1,6 +1,6 @@
 use aprsproxy::CONFIG;
-use log::{error, info};
-use tokio::io::{self, AsyncReadExt, AsyncWriteExt};
+use log::{error, info, trace, warn};
+use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::tcp::{ReadHalf, WriteHalf};
 use tokio::net::{TcpListener, TcpStream};
 
@@ -45,7 +45,7 @@ async fn transfer(mut inbound: TcpStream, proxy_addr: String) -> Result<(), Box<
     };
 
     let server_to_client = async {
-        io::copy(&mut ro, &mut wi).await?;
+        copy_data_to_client(&mut ro, &mut wi).await?;
         wi.shutdown().await
     };
 
@@ -80,6 +80,34 @@ async fn copy_data_to_server(
         }
         info!("{}", line.trim_end());
         filelog::log(line.as_str());
+    }
+
+    writer.flush().await?;
+    Ok(())
+}
+
+async fn copy_data_to_client(
+    reader: &mut ReadHalf<'_>,
+    writer: &mut WriteHalf<'_>,
+) -> Result<(), std::io::Error> {
+    let mut buf = vec![0u8; 0x1024];
+    let mut n: usize;
+
+    loop {
+        n = reader.read(&mut buf).await?;
+        if n == 0 {
+            break;
+        }
+
+        writer.write_all(&buf[..n]).await?;
+
+        let line: String = String::from_utf8_lossy(&buf[..n]).to_string();
+
+        if line.contains("Invalid") || line.contains("logresp") {
+            warn!("{}", line.trim_end());
+        } else {
+            trace!("{}", line.trim_end());
+        }
     }
 
     writer.flush().await?;
