@@ -81,7 +81,7 @@ async fn copy_data_to_server(
         info!("{}", line.trim_end());
         filelog::log(line.as_str());
     }
-    io::stdout().flush().await?;
+
     writer.flush().await?;
     Ok(())
 }
