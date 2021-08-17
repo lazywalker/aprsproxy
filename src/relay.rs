@@ -94,7 +94,7 @@ async fn copy_data_to_server(
             if need_to_forward {
                 match forwarder::post(CONFIG.forward_to.as_str(), callsign, line.as_str()).await {
                     Ok(msg) => {
-                        debug!("Forwarded: {}", msg);
+                        debug!("Forwarded: {}", msg.trim_end());
                     }
                     Err(e) => {
                         error!("Failed to forward: {}", e);

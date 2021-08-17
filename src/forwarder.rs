@@ -55,8 +55,8 @@ mod tests {
             timestamp()
         );
         assert_eq!(
-            "ok\n".to_string(),
-            aw!(post(url, callsign, package.as_str())).unwrap()
+            "ok".to_string(),
+            aw!(post(url, callsign, package.as_str())).unwrap().trim_end()
         );
     }
 
