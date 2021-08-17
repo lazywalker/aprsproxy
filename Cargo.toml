@@ -1,6 +1,6 @@
 [package]
 name = "aprsproxy"
-version = "0.1.2"
+version = "0.2.1"
 authors = ["Michael BD7MQB <bd7mqb@qq.com>"]
 edition = "2018"
 
@@ -8,6 +8,8 @@ edition = "2018"
 
 [dependencies]
 tokio = { version = "1", features = ["full"] }
+tokio-test = "0.4"
+reqwest = { version = "0.11" }
 futures = { version = "0.3", features = ["thread-pool"]}
 trust-dns-resolver = "0.20"
 structopt = "0.3"
