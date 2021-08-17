@@ -38,6 +38,15 @@ pub struct Opt {
     /// Enable file logging
     #[structopt(short, long)]
     pub filelog: bool,
+
+    /// Forward APRS packets start with the line prefix
+    #[structopt(long = "forward", multiple = true)]
+    pub forward_with: Vec<String>,
+
+    /// Forward the matched APRS packets to Send-only APRS-IS service with http protocol 
+    #[structopt(long = "to", default_value = "china.aprs2.net:8080")]
+    pub forward_to: String,
+
 }
 
 fn parse_ipaddr(addr_str: &str) -> Result<String, AddrParseError> {
@@ -57,6 +66,8 @@ pub struct ProxyConfig {
     pub replace_from: Vec<String>,
     pub replace_with: Vec<String>,
     pub filelog: bool,
+    pub forward_with: Vec<String>,
+    pub forward_to: String,
 }
 
 impl ProxyConfig {
@@ -69,6 +80,8 @@ impl ProxyConfig {
             replace_from: opt.replace_from,
             replace_with: opt.replace_with,
             filelog: opt.filelog,
+            forward_with: opt.forward_with,
+            forward_to: opt.forward_to,
         }
     }
 }

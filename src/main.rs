@@ -2,6 +2,8 @@ use log::info;
 
 mod dns;
 mod filelog;
+mod forwarder;
+mod passcode;
 mod relay;
 
 #[tokio::main]
