@@ -1,5 +1,5 @@
 use aprsproxy::CONFIG;
-use log::{error, info, trace, warn};
+use log::{debug, error, info, trace, warn};
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::tcp::{ReadHalf, WriteHalf};
 use tokio::net::{TcpListener, TcpStream};
@@ -7,8 +7,8 @@ use tokio::net::{TcpListener, TcpStream};
 use futures::FutureExt;
 use std::error::Error;
 
-use crate::dns;
 use crate::filelog;
+use crate::{dns, forwarder};
 
 pub async fn serv() -> Result<(), Box<dyn Error>> {
     filelog::init();
@@ -73,13 +73,39 @@ async fn copy_data_to_server(
             for (i, s) in CONFIG.replace_from.iter().enumerate() {
                 line = line.replace(s.as_str(), CONFIG.replace_with[i].as_str());
             }
-
-            writer.write_all(&line.as_bytes()).await?;
-        } else {
-            writer.write_all(&buf[..n]).await?;
         }
+
         info!("{}", line.trim_end());
         filelog::log(line.as_str());
+
+        // handle the forwarder
+        let mut need_to_forward = false;
+        let mut callsign = "";
+        if CONFIG.forward_with.len() > 0 {
+            for (_, s) in CONFIG.forward_with.iter().enumerate() {
+                if line.starts_with(s.as_str()) {
+                    need_to_forward = true;
+                    callsign = s.as_str();
+                    break;
+                }
+            }
+
+            trace!("need_to_forward = {}", need_to_forward);
+            if need_to_forward {
+                match forwarder::post(CONFIG.forward_to.as_str(), callsign, line.as_str()).await {
+                    Ok(msg) => {
+                        debug!("Forwarded: {}", msg);
+                    }
+                    Err(e) => {
+                        error!("Failed to forward: {}", e);
+                    }
+                }
+            }
+        }
+
+        if !need_to_forward {
+            writer.write_all(&line.as_bytes()).await?;
+        }
     }
 
     writer.flush().await?;

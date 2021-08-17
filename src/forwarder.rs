@@ -24,7 +24,7 @@ pub async fn post(url: &str, callsign: &str, package: &str) -> Result<String, re
     let body = format!("{}\n{}", login_message, package);
 
     Ok(client
-        .post(url)
+        .post(format!("http://{}", url))
         .headers(headers)
         .body(body)
         .send()
@@ -47,7 +47,7 @@ mod tests {
 
     #[test]
     fn test_post() {
-        let url = "http://china.aprs2.net:8080";
+        let url = "china.aprs2.net:8080";
         let callsign = "T3ST-13";
         let package = format!(
             "{}>APRS,TCPIP*,qAC,T2NANJING:>This is a test packet sn {}",
