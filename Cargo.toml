@@ -7,8 +7,8 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-tokio = { version = "1", features = ["full"] }
-reqwest = { version = "0.11" }
+tokio = { version = "1", features = ["net", "macros"] }
+reqwest = { version = "0.11", default-features = false }
 futures = { version = "0.3", features = ["thread-pool"]}
 trust-dns-resolver = "0.20"
 structopt = "0.3"
@@ -19,5 +19,3 @@ env_logger = "0.8"
 
 [dev-dependencies]
 tokio-test = "0.4"
-# for cross build fix: run pkg_config fail: "pkg-config has not been configured to support cross-compilation
-openssl = { version = "0.10.32", features = ["vendored"] }
