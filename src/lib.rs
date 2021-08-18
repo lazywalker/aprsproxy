@@ -35,18 +35,26 @@ pub struct Opt {
     #[structopt(long = "with", multiple = true)]
     pub replace_with: Vec<String>,
 
-    /// Enable file logging
-    #[structopt(short, long)]
-    pub filelog: bool,
-
     /// Forward APRS packets start with the line prefix
     #[structopt(long = "forward", multiple = true)]
     pub forward_with: Vec<String>,
 
-    /// Forward the matched APRS packets to Send-only APRS-IS service with http protocol 
+    /// Forward the matched APRS packets to Send-only APRS-IS service with http protocol
     #[structopt(long = "to", parse(try_from_str = parse_ipaddr), default_value = "china.aprs2.net:8080")]
     pub forward_to: String,
 
+    /// Enable file logging
+    #[structopt(short, long)]
+    pub filelog: bool,
+
+    // The number of occurrences of the `v/verbose` flag
+    /// Verbose mode (-v, -vv, -vvv, etc.)
+    #[structopt(short, long, parse(from_occurrences))]
+    pub verbose: u8,
+
+    /// Quiet mode, no output to stdout
+    #[structopt(short, long)]
+    pub quiet: bool,
 }
 
 fn parse_ipaddr(addr_str: &str) -> Result<String, AddrParseError> {
@@ -65,9 +73,11 @@ pub struct ProxyConfig {
     pub remote_addr: String,
     pub replace_from: Vec<String>,
     pub replace_with: Vec<String>,
-    pub filelog: bool,
     pub forward_with: Vec<String>,
     pub forward_to: String,
+    pub filelog: bool,
+    pub verbose: u8,
+    pub quiet: bool,
 }
 
 impl ProxyConfig {
@@ -79,9 +89,11 @@ impl ProxyConfig {
             remote_addr: opt.remote_addr,
             replace_from: opt.replace_from,
             replace_with: opt.replace_with,
-            filelog: opt.filelog,
             forward_with: opt.forward_with,
             forward_to: opt.forward_to,
+            filelog: opt.filelog,
+            verbose: opt.verbose,
+            quiet: opt.quiet,
         }
     }
 }
