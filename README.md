@@ -1,4 +1,4 @@
-# AprsProxy 0.2.1
+# AprsProxy
 
 I was thinking how to monitor APRS statistic from my iGates (from me or friends), one proper way is to run a APRS proxy server between iGates and APRS-IS server. But I just could not find a software to do this so I decided to write my own.
 
