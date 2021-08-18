@@ -24,7 +24,7 @@ pub struct Opt {
     pub local_addr: String,
 
     /// The remote address and port to connect to
-    #[structopt(short = "r", long = "remote", default_value = "china.aprs2.net:14580")]
+    #[structopt(short = "r", long = "remote", parse(try_from_str = parse_ipaddr), default_value = "china.aprs2.net:14580")]
     pub remote_addr: String,
 
     /// The text to be replaced, can be multiple values
@@ -44,7 +44,7 @@ pub struct Opt {
     pub forward_with: Vec<String>,
 
     /// Forward the matched APRS packets to Send-only APRS-IS service with http protocol 
-    #[structopt(long = "to", default_value = "china.aprs2.net:8080")]
+    #[structopt(long = "to", parse(try_from_str = parse_ipaddr), default_value = "china.aprs2.net:8080")]
     pub forward_to: String,
 
 }
