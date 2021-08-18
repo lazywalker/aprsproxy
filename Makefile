@@ -1,10 +1,13 @@
+VER=$(shell cargo pkgid | cut -d\# -f2 | cut -d: -f2)
 GIT_VER=$(shell git rev-parse --short HEAD)
-VER="0.2.1"
 APP_VERSION=${VER}.${GIT_VER}
 TARBALL="target/tarball"
 APP_NAME="aprsproxy"
 
 all: debug
+
+ver:
+	@echo Version: ${APP_NAME}-${APP_VERSION}
 
 debug:
 	cargo build
