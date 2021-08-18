@@ -1,4 +1,6 @@
+use chrono::Local;
 use lazy_static::lazy_static;
+use std::io::Write;
 use std::{net::AddrParseError, str::FromStr};
 use structopt::StructOpt;
 
@@ -96,4 +98,36 @@ impl ProxyConfig {
             quiet: opt.quiet,
         }
     }
+}
+
+/**
+Initialize the logger
+*/
+pub fn init_logger() {
+    // use default filter from env RUST_LOG, if no filter is specified then use -q or -v
+    let env = env_logger::Env::default().default_filter_or(
+        match CONFIG.quiet {
+            true => log::LevelFilter::Off,
+            false => match CONFIG.verbose {
+                0 => log::LevelFilter::Warn,
+                1 => log::LevelFilter::Info,
+                2 => log::LevelFilter::Debug,
+                3..=9 | _ => log::LevelFilter::Trace,
+            },
+        }
+        .as_str(),
+    );
+
+    env_logger::Builder::from_env(env)
+        .format(|buf, record| {
+            writeln!(
+                buf,
+                "{} {:5} {} - {}",
+                Local::now().format("%Y-%m-%d %H:%M:%S%.3f%Z"),
+                buf.default_styled_level(record.level()),
+                record.module_path().unwrap_or("<unnamed>"),
+                &record.args()
+            )
+        })
+        .init();
 }

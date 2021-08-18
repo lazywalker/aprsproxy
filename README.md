@@ -47,7 +47,7 @@ OPTIONS:
 
 ## Example
 ```log
-$ ./aprsproxy --replace=BD7MQB-13 --with=SZWX-13 -f -v
+$ ./aprsproxy --replace=BD7MQB-13 --with=T3ET -f -v
 [2021-07-27T02:33:45Z INFO  aprsproxy] Starting up...
 [2021-07-27T02:33:45Z INFO  aprsproxy::dns] Resolving ip address...
 [2021-07-27T02:33:45Z INFO  aprsproxy::relay] Listening on: 0.0.0.0:8074

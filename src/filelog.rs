@@ -1,7 +1,4 @@
-use chrono::{
-    format::{DelayedFormat, StrftimeItems},
-    prelude::*,
-};
+use chrono::Local;
 
 use std::{
     fs::{self, OpenOptions},
@@ -20,19 +17,12 @@ pub fn log(msg: &str) {
     if !CONFIG.filelog {
         return;
     }
-    
-    let datefmt = "%Y%m%d";
-    let dtfmt = "%Y-%m-%d %H:%M:%S";
 
-    let now: DateTime<Local> = Local::now();
-    let date: DelayedFormat<StrftimeItems> = now.format(datefmt);
-    let dt: DelayedFormat<StrftimeItems> = now.format(dtfmt);
-    let str_date: String = date.to_string(); // 20210727
-
+    let now = Local::now();
     // rotate log file
-    let filename = format!("./log/{}.log", str_date);
+    let filename = format!("./log/{}.log", now.format("%Y%m%d"));
     // appending time to fornt of every line
-    let logtext = format!("{} {}", dt.to_string(), msg);
+    let logtext = format!("{} {}", now.format("%Y-%m-%dT%H:%M:%S%.3f%Z"), msg);
 
     let mut f = OpenOptions::new()
         .append(true)
