@@ -9,27 +9,7 @@ mod relay;
 #[tokio::main]
 async fn main() {
     // return println!("{:?}", <aprsproxy::Opt as structopt::StructOpt>::from_args());
-    // return println!("{:?}", std::env::var("RUST_LOG"));
-    // init logger
-    match std::env::var("RUST_LOG") {
-        Ok(_) => {
-            env_logger::init();
-        }
-        Err(_) => {
-            let mut eb = env_logger::Builder::new();
-            if aprsproxy::CONFIG.quiet {
-                eb.filter(None, log::LevelFilter::Off);
-            } else {
-                match aprsproxy::CONFIG.verbose {
-                    0 => eb.filter(None, log::LevelFilter::Warn),
-                    1 => eb.filter(None, log::LevelFilter::Info),
-                    2 => eb.filter(None, log::LevelFilter::Debug),
-                    3..=9 | _ => eb.filter(None, log::LevelFilter::Trace),
-                };
-            }
-            eb.init();
-        }
-    }
+    init_log();
 
     info!("Starting up...");
     if aprsproxy::CONFIG.replace_from.len() != aprsproxy::CONFIG.replace_with.len() {
@@ -37,4 +17,38 @@ async fn main() {
     }
 
     relay::serv().await.unwrap();
+}
+
+/**
+Initialize the logger
+*/
+fn init_log() {
+    // use default filter from env RUST_LOG, if no filter is specified then use -q or -v
+    let env = env_logger::Env::default().default_filter_or(
+        match aprsproxy::CONFIG.quiet {
+            true => log::LevelFilter::Off,
+            false => match aprsproxy::CONFIG.verbose {
+                0 => log::LevelFilter::Warn,
+                1 => log::LevelFilter::Info,
+                2 => log::LevelFilter::Debug,
+                3..=9 | _ => log::LevelFilter::Trace,
+            },
+        }
+        .as_str(),
+    );
+
+    use chrono::Local;
+    use std::io::Write;
+    env_logger::Builder::from_env(env)
+        .format(|buf, record| {
+            writeln!(
+                buf,
+                "{} {:5} {} - {}",
+                Local::now().format("%Y-%m-%d %H:%M:%S%.3f%Z"),
+                buf.default_styled_level(record.level()),
+                record.module_path().unwrap_or("<unnamed>"),
+                &record.args()
+            )
+        })
+        .init();
 }
