@@ -2,7 +2,7 @@
 generate passcode from callsign for APRS-IS
 */
 pub fn generate(callsign: &str) -> u32 {
-    let passcode = callsign.split("-").nth(0).unwrap();
+    let passcode = callsign.split('-').next().unwrap();
     // initialize hash
     let mut hash = 0x73e2;
     let mut chars = passcode.chars();
@@ -10,8 +10,8 @@ pub fn generate(callsign: &str) -> u32 {
     let count = chars.clone().count();
 
     while i < count {
-        hash ^= ord(chars.nth(0).unwrap()) << 8;
-        hash ^= ord(chars.nth(0).unwrap());
+        hash ^= ord(chars.next().unwrap()) << 8;
+        hash ^= ord(chars.next().unwrap());
         i += 2;
     }
 

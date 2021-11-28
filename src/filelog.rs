@@ -30,5 +30,5 @@ pub fn log(msg: &str) {
         .open(filename)
         .unwrap();
 
-    f.write(logtext.as_bytes()).unwrap();
+    f.write_all(logtext.as_bytes()).unwrap();
 }

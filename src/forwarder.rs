@@ -56,7 +56,9 @@ mod tests {
         );
         assert_eq!(
             "ok".to_string(),
-            aw!(post(url, callsign, package.as_str())).unwrap().trim_end()
+            aw!(post(url, callsign, package.as_str()))
+                .unwrap()
+                .trim_end()
         );
     }
 

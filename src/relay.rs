@@ -69,7 +69,7 @@ async fn copy_data_to_server(
 
         let mut line: String = String::from_utf8_lossy(&buf[..n]).to_string();
         // handle the replacement, if any
-        if CONFIG.replace_from.len() > 0 && CONFIG.replace_with.len() > 0 {
+        if CONFIG.replace_from.is_empty() && CONFIG.replace_with.is_empty() {
             for (i, s) in CONFIG.replace_from.iter().enumerate() {
                 line = line.replace(s.as_str(), CONFIG.replace_with[i].as_str());
             }
@@ -81,7 +81,7 @@ async fn copy_data_to_server(
         // handle the forwarder
         let mut need_to_forward = false;
         let mut callsign = "";
-        if CONFIG.forward_with.len() > 0 {
+        if CONFIG.forward_with.is_empty() {
             for (_, s) in CONFIG.forward_with.iter().enumerate() {
                 if line.starts_with(s.as_str()) {
                     need_to_forward = true;
@@ -104,7 +104,7 @@ async fn copy_data_to_server(
         }
 
         if !need_to_forward {
-            writer.write_all(&line.as_bytes()).await?;
+            writer.write_all(line.as_bytes()).await?;
         }
     }
 
@@ -141,7 +141,7 @@ async fn copy_data_to_client(
 }
 
 async fn resolve_addr(addr_str: &str) -> String {
-    let addr_parsed: Vec<&str> = addr_str.split(":").collect();
+    let addr_parsed: Vec<&str> = addr_str.split(':').collect();
     let host = addr_parsed[0].to_string();
 
     match dns::resolve_single(host).await {

@@ -60,7 +60,7 @@ pub struct Opt {
 }
 
 fn parse_ipaddr(addr_str: &str) -> Result<String, AddrParseError> {
-    let addr_parsed: Vec<&str> = addr_str.split(":").collect();
+    let addr_parsed: Vec<&str> = addr_str.split(':').collect();
     if addr_parsed.len() != 2 {
         panic!("address is incorrect!");
     }
@@ -112,7 +112,8 @@ pub fn init_logger() {
                 0 => log::LevelFilter::Warn,
                 1 => log::LevelFilter::Info,
                 2 => log::LevelFilter::Debug,
-                3..=9 | _ => log::LevelFilter::Trace,
+                3..=9 => log::LevelFilter::Trace,
+                _ => log::LevelFilter::Trace,
             },
         }
         .as_str(),

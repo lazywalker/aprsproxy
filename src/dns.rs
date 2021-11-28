@@ -27,7 +27,7 @@ pub async fn resolve_single(addr: String) -> Option<net::IpAddr> {
                 Some(ip_v6)
             } else {
                 error!("Cannot resolve {}", addr);
-                return None;
+                None
             }
         }
     }
