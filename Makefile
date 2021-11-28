@@ -36,3 +36,9 @@ tarball: macos linux armv7
 
 	@echo Creating armv7-unknown-linux-musleabihf
 	@tar cvfz "${TARBALL}/${APP_NAME}-${APP_VERSION}-armv7-unknown-linux-musleabihf.tar.gz" -C target/armv7-unknown-linux-musleabihf/release/ ${APP_NAME}
+
+lint:
+	cargo clippy --all
+
+fmt:
+	cargo +nightly fmt --all
