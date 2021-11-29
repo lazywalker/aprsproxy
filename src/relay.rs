@@ -69,7 +69,7 @@ async fn copy_data_to_server(
 
         let mut line: String = String::from_utf8_lossy(&buf[..n]).to_string();
         // handle the replacement, if any
-        if CONFIG.replace_from.is_empty() && CONFIG.replace_with.is_empty() {
+        if !CONFIG.replace_from.is_empty() && !CONFIG.replace_with.is_empty() {
             for (i, s) in CONFIG.replace_from.iter().enumerate() {
                 line = line.replace(s.as_str(), CONFIG.replace_with[i].as_str());
             }
@@ -81,7 +81,7 @@ async fn copy_data_to_server(
         // handle the forwarder
         let mut need_to_forward = false;
         let mut callsign = "";
-        if CONFIG.forward_with.is_empty() {
+        if !CONFIG.forward_with.is_empty() {
             for (_, s) in CONFIG.forward_with.iter().enumerate() {
                 if line.starts_with(s.as_str()) {
                     need_to_forward = true;
