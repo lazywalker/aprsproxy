@@ -140,8 +140,8 @@ async fn resolve_addr(addr_str: &str) -> String {
     let addr_parsed: Vec<&str> = addr_str.split(':').collect();
     let host = addr_parsed[0].to_string();
 
-    match dns::resolve_single::<dyn Error>(host).await {
-        Ok(ip) => format!("{}:{}", ip.to_string(), addr_parsed[1]),
-        _ => addr_str.to_string(),
-    }
+    dns::resolve_single::<dyn Error>(host)
+        .await
+        .map(|ip| format!("{}:{}", ip.to_string(), addr_parsed[1]))
+        .unwrap_or(addr_str.to_string())
 }
