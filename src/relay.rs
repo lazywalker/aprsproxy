@@ -90,14 +90,16 @@ async fn copy_data_to_server(
 
             trace!("need_to_forward = {}", need_to_forward);
             if need_to_forward {
-                match forwarder::post(CONFIG.forward_to.as_str(), callsign, line.as_str()).await {
-                    Ok(msg) => {
-                        debug!("Forwarded: {}", msg.trim_end());
-                    }
-                    Err(e) => {
-                        error!("Failed to forward: {}", e);
-                    }
-                }
+                forwarder::post(CONFIG.forward_to.as_str(), callsign, line.as_str())
+                    .await
+                    .map_or_else(
+                        |e| {
+                            error!("Failed to forward; error={}", e);
+                        },
+                        |msg| {
+                            debug!("Forwarded: {}", msg.trim_end());
+                        },
+                    );
             }
         }
 
