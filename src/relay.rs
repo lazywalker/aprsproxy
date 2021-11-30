@@ -68,9 +68,13 @@ async fn copy_data_to_server(
         let mut line: String = String::from_utf8_lossy(&buf[..n]).to_string();
         // handle the replacement, if any
         if !CONFIG.replace_from.is_empty() && !CONFIG.replace_with.is_empty() {
-            for (i, s) in CONFIG.replace_from.iter().enumerate() {
-                line = line.replace(s.as_str(), CONFIG.replace_with[i].as_str());
-            }
+            CONFIG
+                .replace_from
+                .iter()
+                .enumerate()
+                .for_each(|(i, from)| {
+                    line = line.replace(from, &CONFIG.replace_with[i]);
+                });
         }
 
         info!("{}", line.trim_end());
@@ -80,13 +84,15 @@ async fn copy_data_to_server(
         let mut need_to_forward = false;
         let mut callsign = "";
         if !CONFIG.forward_with.is_empty() {
-            for (_, s) in CONFIG.forward_with.iter().enumerate() {
+            CONFIG.forward_with.iter().find(|s| {
                 if line.starts_with(s.as_str()) {
                     need_to_forward = true;
                     callsign = s.as_str();
-                    break;
+                    true
+                } else {
+                    false
                 }
-            }
+            });
 
             trace!("need_to_forward = {}", need_to_forward);
             if need_to_forward {
@@ -145,5 +151,5 @@ async fn resolve_addr(addr_str: &str) -> String {
     dns::resolve_single::<dyn Error>(host)
         .await
         .map(|ip| format!("{}:{}", ip.to_string(), addr_parsed[1]))
-        .unwrap_or(addr_str.to_string())
+        .unwrap_or_else(|_| addr_str.to_string())
 }
