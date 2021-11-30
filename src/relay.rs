@@ -49,9 +49,7 @@ async fn transfer(mut inbound: TcpStream, proxy_addr: String) -> Result<(), Box<
         wi.shutdown().await
     };
 
-    tokio::try_join!(client_to_server, server_to_client)?;
-
-    Ok(())
+    Ok(tokio::try_join!(client_to_server, server_to_client).map(|_| ())?)
 }
 
 async fn copy_data_to_server(
@@ -108,8 +106,7 @@ async fn copy_data_to_server(
         }
     }
 
-    writer.flush().await?;
-    Ok(())
+    writer.flush().await
 }
 
 async fn copy_data_to_client(
@@ -136,8 +133,7 @@ async fn copy_data_to_client(
         }
     }
 
-    writer.flush().await?;
-    Ok(())
+    writer.flush().await
 }
 
 async fn resolve_addr(addr_str: &str) -> String {
