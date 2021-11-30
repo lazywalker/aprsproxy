@@ -1,3 +1,5 @@
+use std::error::Error;
+
 use log::info;
 
 mod dns;
@@ -7,7 +9,7 @@ mod passcode;
 mod relay;
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<(), Box<dyn Error>> {
     // return println!("{:?}", <aprsproxy::Opt as structopt::StructOpt>::from_args());
     aprsproxy::init_logger();
 
@@ -16,5 +18,5 @@ async fn main() {
         panic!("replace-from and replace-with must be the same length");
     }
 
-    relay::serv().await.unwrap();
+    relay::serv().await
 }

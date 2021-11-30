@@ -1,14 +1,16 @@
+use std::error::Error;
+
 use reqwest::header::HeaderMap;
 
 use crate::passcode;
 
-pub async fn post(url: &str, callsign: &str, package: &str) -> Result<String, reqwest::Error> {
+pub async fn post(url: &str, callsign: &str, package: &str) -> Result<String, Box<dyn Error>> {
     let client = reqwest::Client::new();
     let mut headers = HeaderMap::new();
 
     // Send-only specification see http://www.aprs-is.net/SendOnlyPorts.aspx
-    headers.insert("Accept-Type", "text/plain".parse().unwrap());
-    headers.insert("Content-Type", "application/octet-stream".parse().unwrap());
+    headers.insert("Accept-Type", "text/plain".parse()?);
+    headers.insert("Content-Type", "application/octet-stream".parse()?);
 
     let login_message = {
         let passcode = passcode::generate(callsign);

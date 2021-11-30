@@ -13,9 +13,9 @@ pub fn init() {
     }
 }
 
-pub fn log(msg: &str) {
+pub fn log(msg: &str) -> Result<(), std::io::Error> {
     if !CONFIG.filelog {
-        return;
+        return Ok(());
     }
 
     let now = Local::now();
@@ -27,8 +27,7 @@ pub fn log(msg: &str) {
     let mut f = OpenOptions::new()
         .append(true)
         .create(true)
-        .open(filename)
-        .unwrap();
+        .open(filename)?;
 
-    f.write_all(logtext.as_bytes()).unwrap();
+    f.write_all(logtext.as_bytes())
 }

@@ -76,7 +76,7 @@ async fn copy_data_to_server(
         }
 
         info!("{}", line.trim_end());
-        filelog::log(line.as_str());
+        filelog::log(line.as_str())?;
 
         // handle the forwarder
         let mut need_to_forward = false;
@@ -144,8 +144,8 @@ async fn resolve_addr(addr_str: &str) -> String {
     let addr_parsed: Vec<&str> = addr_str.split(':').collect();
     let host = addr_parsed[0].to_string();
 
-    match dns::resolve_single(host).await {
-        Some(ip) => format!("{}:{}", ip.to_string(), addr_parsed[1]),
-        None => addr_str.to_string(),
+    match dns::resolve_single::<dyn Error>(host).await {
+        Ok(ip) => format!("{}:{}", ip.to_string(), addr_parsed[1]),
+        _ => addr_str.to_string(),
     }
 }
