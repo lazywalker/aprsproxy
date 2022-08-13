@@ -130,5 +130,6 @@ pub fn init_logger() {
                 &record.args()
             )
         })
+        .target(env_logger::Target::Stdout)
         .init();
 }
