@@ -58,3 +58,12 @@ $ ./aprsproxy --replace=SO23 --with=T3ET -f -v
 [2021-07-27T02:34:53Z INFO  aprsproxy::relay] BI7KCD-9>R3PPR7,BA7NQ-10*,WIDE1*,BH7KCJ-3*,WIDE2*:`)XRmpC>/`"4#}_%
 [2021-07-27T02:35:07Z INFO  aprsproxy::relay] VR2ZVR>RR2VT1,BH7KCJ-3*,WIDE1*:`*_LnplK\]"4s}Hello from VR2ZVR...Stay Safe !!=
 ```
+
+## Run with docker
+```log
+$ docker run -it --init --rm -e TZ=Asia/Shanghai -p 14580:14580 lazywalker/aprsproxy --replace=SO23 --with=T3ET -v
+2022-08-13 22:32:53.087+08:00 INFO  aprsproxy - Starting up...
+2022-08-13 22:32:53.087+08:00 INFO  aprsproxy::dns - Resolving ip address...
+2022-08-13 22:32:53.112+08:00 INFO  aprsproxy::relay - Listening on: 0.0.0.0:14580
+2022-08-13 22:32:53.112+08:00 INFO  aprsproxy::relay - Proxying to: 156.251.162.146:14580
+```
