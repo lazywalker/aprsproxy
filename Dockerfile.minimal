@@ -1,0 +1,12 @@
+# docker build -t lazywalker/aprsproxy:minimal -f Dockerfile.minimal .
+# docker run -it --init --rm -v /etc/localtime:/etc/localtime lazywalker/aprsproxy:minimal --replace=SO23 --with=T3ET -v
+
+FROM scratch
+LABEL maintainer="Michael BD7MQB <bd7mqb@qq.com>"
+
+WORKDIR /app
+COPY target/x86_64-unknown-linux-musl/release/aprsproxy .
+
+EXPOSE 14580
+
+ENTRYPOINT ["./aprsproxy"]
