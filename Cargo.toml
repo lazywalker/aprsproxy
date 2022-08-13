@@ -1,6 +1,6 @@
 [package]
 name = "aprsproxy"
-version = "0.3.2"
+version = "0.3.3"
 authors = ["Michael BD7MQB <bd7mqb@qq.com>"]
 edition = "2021"
 
@@ -19,3 +19,21 @@ env_logger = "0.9"
 
 [dev-dependencies]
 tokio-test = "0.4"
+
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"
+lto = true
+codegen-units = 1
+strip = true
+
+[profile.bench]
+debug = 1
+
+[profile.minimal]
+inherits = "release"
+opt-level = "z"
+lto = true
+codegen-units = 1
