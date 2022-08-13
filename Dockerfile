@@ -11,7 +11,6 @@ COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
 WORKDIR /app
 COPY target/x86_64-unknown-linux-musl/release/aprsproxy .
 
-USER 1000:1000
 EXPOSE 14580
 
 ENTRYPOINT ["./aprsproxy"]
