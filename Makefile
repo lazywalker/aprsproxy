@@ -42,3 +42,9 @@ lint:
 
 fmt:
 	cargo +nightly fmt --all
+
+docker: linux
+	docker build -t lazywalker/aprsproxy .
+
+docker-push:
+	docker push lazywalker/aprsproxy
