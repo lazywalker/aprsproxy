@@ -150,6 +150,6 @@ async fn resolve_addr(addr_str: &str) -> String {
 
     dns::resolve_single::<dyn Error>(host)
         .await
-        .map(|ip| format!("{}:{}", ip.to_string(), addr_parsed[1]))
+        .map(|ip| format!("{}:{}", ip, addr_parsed[1]))
         .unwrap_or_else(|_| addr_str.to_string())
 }
