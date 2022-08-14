@@ -2,7 +2,7 @@
 
 I was thinking how to monitor APRS statistic from my iGates (from me or friends), one proper way is to run a APRS proxy server between iGates and APRS-IS server. But I just could not find a software to do this so I decided to write my own.
 
-This APRS proxy server would received packets from devices, logged it files, generate statistic or send/forward specific aprs packets to other application, replace the text to meet my requirement and resend packets to native APRS-IS server.
+This APRS proxy server would received packets from devices, logged it into files, generate statistic or send/forward specific aprs packets to other application, replace the text to meet my requirement and resend packets to native APRS-IS server.
 
 ## Features
 
@@ -12,6 +12,7 @@ This APRS proxy server would received packets from devices, logged it files, gen
 * Handle multi client connections with highly efficiency
 * You can use aprs-is via domain name
 * Daily log to files
+* Work with docker
 
 ## Command
 
@@ -66,4 +67,8 @@ $ docker run -it --init --rm -e TZ=Asia/Shanghai -p 14580:14580 lazywalker/aprsp
 2022-08-13 22:32:53.087+08:00 INFO  aprsproxy::dns - Resolving ip address...
 2022-08-13 22:32:53.112+08:00 INFO  aprsproxy::relay - Listening on: 0.0.0.0:14580
 2022-08-13 22:32:53.112+08:00 INFO  aprsproxy::relay - Proxying to: 156.251.162.146:14580
+...
+
+# log to files
+$ docker run -it --init --rm -e TZ=Asia/Shanghai -p 14580:14580 --volume /volume1/docker/aprsproxy:/app/log lazywalker/aprsproxy --replace=SO23 --with=T3ET -v -f
 ```
