@@ -2,6 +2,10 @@
 name = "aprsproxy"
 version = "0.3.5"
 authors = ["Michael BD7MQB <bd7mqb@qq.com>"]
+description = "A simply APRS-IS proxy tool"
+license = "AGPL-3.0"
+repository = "https://github.com/lazywalker/aprsproxy"
+readme = "README.md"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
