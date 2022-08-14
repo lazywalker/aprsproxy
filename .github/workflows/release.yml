@@ -1,0 +1,137 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "*"
+
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  release:
+    name: Cross build for ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            exe: aprsproxy
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-musl
+            exe: aprsproxy
+          - os: ubuntu-latest
+            target: aarch64-unknown-linux-musl
+            exe: aprsproxy
+          - os: ubuntu-latest
+            target: arm-unknown-linux-musleabi
+            exe: aprsproxy
+          - os: ubuntu-latest
+            target: arm-unknown-linux-musleabihf
+            exe: aprsproxy
+          - os: ubuntu-latest
+            target: armv7-unknown-linux-musleabihf
+            exe: aprsproxy
+          - os: ubuntu-latest
+            target: mips-unknown-linux-gnu
+            exe: aprsproxy
+          - os: ubuntu-latest
+            target: mips-unknown-linux-musl
+            exe: aprsproxy
+          - os: ubuntu-latest
+            target: mipsel-unknown-linux-gnu
+            exe: aprsproxy
+          - os: ubuntu-latest
+            target: mipsel-unknown-linux-musl
+            exe: aprsproxy
+          - os: ubuntu-latest
+            target: mips64-unknown-linux-gnuabi64
+            exe: aprsproxy
+          - os: ubuntu-latest
+            target: mips64el-unknown-linux-gnuabi64
+            exe: aprsproxy
+
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            exe: aprsproxy
+
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            exe: aprsproxy.exe
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+      - name: Install cross
+        run: cargo install --version 0.1.16 cross
+      - name: Run tests
+        run: cross test --release --target ${{ matrix.target }} --verbose
+      - name: Build release
+        run: cross build --release --target ${{ matrix.target }}
+      - name: Run UPX
+        # Upx may not support some platforms. Ignore the errors
+        continue-on-error: true
+        # Disable upx for mips. See https://github.com/upx/upx/issues/387
+        if: matrix.os == 'ubuntu-latest' && !contains(matrix.target, 'mips')
+        uses: crazy-max/ghaction-upx@v1
+        with:
+          version: v3.96
+          files: target/${{ matrix.target }}/release/${{ matrix.exe }}
+          args: -q --best --lzma
+      - uses: actions/upload-artifact@v2
+        with:
+          name: aprsproxy-${{ matrix.target }}
+          path: target/${{ matrix.target }}/release/${{ matrix.exe }}
+      - name: Zip Release
+        uses: TheDoctor0/zip-release@0.6.1
+        with:
+          type: zip
+          filename: aprsproxy-${{ matrix.target }}.zip
+          directory: target/${{ matrix.target }}/release/
+          path: ${{ matrix.exe }}
+      - name: Publish
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: target/${{ matrix.target }}/release/aprsproxy-${{ matrix.target }}.zip
+          generate_release_notes: true
+          draft: true
+  docker:
+    name: Publish to Docker Hub
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    needs: release
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          tags: lazywalker/aprsproxy:latest, lazywalker/aprsproxy:${{ github.ref_name }}
+  publish-crate:
+    name: Publish to crates.io
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    needs: release
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+      - name: Publish
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_IO_API_TOKEN }}
+        run: cargo publish
