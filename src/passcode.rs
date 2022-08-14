@@ -25,3 +25,11 @@ get ascii value for a character
 fn ord(c: char) -> u32 {
     c as u32
 }
+
+///
+/// test passcode generation
+///
+#[test]
+fn test_passcode() {
+    assert_eq!(generate("BD7MQB"), 22441);
+}
